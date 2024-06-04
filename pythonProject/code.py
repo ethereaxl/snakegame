@@ -31,6 +31,9 @@ class Snake(tk.Canvas):
     def __init__(self, root, end_game_callback):
         super().__init__(root, width=600, height=620, background="black", highlightthickness=0)
         self.paused = False
+        self.pause_text = self.create_text(
+            300, 310, text="ПАУЗА", font=('TkDefaultFont', 48), fill='white', state='hidden'
+        )
         self.end_game_callback = end_game_callback
         self.snake_pos = [(100, 100), (80, 100), (60, 100)]
         self.food_pos = self.set_new_food_position()
@@ -76,6 +79,8 @@ class Snake(tk.Canvas):
             self.after(100, self.perform_actions)
         elif not self.in_game:
             self.end_game()
+        elif self.paused:
+            self.itemconfig(self.pause_text, state='normal')
 
     def check_collisions(self):
         head_x, head_y = self.snake_pos[0]
@@ -108,6 +113,11 @@ class Snake(tk.Canvas):
         new_direction = e.keysym
         if new_direction == "space":
             self.paused = not self.paused
+            if not self.paused:
+                self.itemconfig(self.pause_text, state='hidden')
+                self.perform_actions()
+            else:
+                self.itemconfig(self.pause_text, state='normal')
         else:
             opposites = {"Up": "Down", "Down": "Up", "Left": "Right", "Right": "Left"}
             if (
