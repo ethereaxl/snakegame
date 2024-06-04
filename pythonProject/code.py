@@ -14,8 +14,8 @@ class SnakeGame:
         root.geometry("500x500")
 
         tk.Label(self.menu_frame, text="Змейка", font=('TkDefaultFont', 24)).pack(pady=10)
-        tk.Button(self.menu_frame, text="Начать игру", command=self.start_game).pack(pady=10)
-        tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy).pack(pady=10)
+        tk.Button(self.menu_frame, text="Начать игру", command=self.start_game).pack(pady=30)
+        tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy).pack(pady=30)
 
     def start_game(self):
         if self.board:
@@ -73,6 +73,9 @@ class Snake(tk.Canvas):
             self.end_game()
 
     def check_collisions(self):
+        head_x, head_y = self.snake_pos[0]
+        if head_x < 0 or head_x >= 600 or head_y < 0 or head_y >= 600 or (head_x, head_y) in self.snake_pos[1:]:
+            self.in_game = False
         pass
 
     def check_food_collision(self):
