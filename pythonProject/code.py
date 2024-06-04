@@ -4,14 +4,14 @@ import random
 class SnakeGame:
     def __init__(self, root):
         self.root = root
-        self.root.title("Игра Змейка")
+        self.root.title("Змейка")
         self.board = None
         self.create_menu()
 
     def create_menu(self):
         self.menu_frame = tk.Frame(self.root)
         self.menu_frame.pack()
-        tk.Label(self.menu_frame, text="Игра Змейка", font=('TkDefaultFont', 24)).pack(pady=10)
+        tk.Label(self.menu_frame, text="Змейка", font=('TkDefaultFont', 24)).pack(pady=10)
         tk.Button(self.menu_frame, text="Начать игру", command=self.start_game).pack(pady=10)
         tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy).pack(pady=10)
 
@@ -41,7 +41,10 @@ class Snake(tk.Canvas):
         self.after(100, self.perform_actions)
 
     def set_new_food_position(self):
-        return (random.randint(0, 29) * 20, random.randint(0, 29) * 20)
+        while True:
+            position = (random.randint(0, 29) * 20, random.randint(0, 29) * 20)
+            if position not in self.snake_pos:
+                return position
 
     def create_objects(self):
         self.create_text(
@@ -51,14 +54,16 @@ class Snake(tk.Canvas):
         self.create_food()
 
     def create_snake(self):
+        self.delete("snake")
         for x_position, y_position in self.snake_pos:
             self.create_rectangle(
-                x_position, y_position, x_position + 20, y_position + 20, fill="green"
+                x_position, y_position, x_position + 20, y_position + 20, fill="green", tags="snake"
             )
 
     def create_food(self):
+        self.delete("food")
         self.create_rectangle(
-            self.food_pos[0], self.food_pos[1], self.food_pos[0] + 20, self.food_pos[1] + 20, fill="red"
+            self.food_pos[0], self.food_pos[1], self.food_pos[0] + 20, self.food_pos[1] + 20, fill="red", tags="food"
         )
 
     def perform_actions(self):
@@ -66,6 +71,7 @@ class Snake(tk.Canvas):
             self.check_collisions()
             self.check_food_collision()
             self.move_snake()
+            self.create_snake()
             self.after(100, self.perform_actions)
         else:
             self.end_game()
@@ -97,17 +103,13 @@ class Snake(tk.Canvas):
 
         self.snake_pos = [new_head_pos] + self.snake_pos[:-1]
 
-        for segment, position in zip(self.find_withtag("snake"), self.snake_pos):
-            self.coords(segment, position[0], position[1], position[0] + 20, position[1] + 20)
-
     def on_key_press(self, e):
         new_direction = e.keysym
-        all_directions = ("Up", "Down", "Left", "Right")
-        opposites = ({"Up", "Down"}, {"Left", "Right"})
+        opposites = {"Up": "Down", "Down": "Up", "Left": "Right", "Right": "Left"}
 
         if (
-            new_direction in all_directions and
-            not {new_direction, self.direction} in opposites
+            new_direction in opposites and
+            opposites[new_direction] != self.direction
         ):
             self.direction = new_direction
 
