@@ -6,6 +6,7 @@ class SnakeGame:
         self.root = root
         self.root.title("Змейка")
         self.board = None
+        self.total_score = 0
         self.create_menu()
 
     def create_menu(self):
@@ -13,8 +14,8 @@ class SnakeGame:
         self.menu_frame.pack()
         root.geometry("600x620")
         root.config(bg='black')
-        tk.Label(self.menu_frame, text="Змейка", font=('TkDefaultFont', 44),bg='black', fg='white').pack(pady=100)
-        tk.Button(self.menu_frame, text="Начать игру", command=self.start_game, font=('TkDefaultFont', 30), bg='black', fg='white').pack(pady=40)
+        tk.Label(self.menu_frame, text="Змейка", font=('TkDefaultFont', 44),bg='black', fg='white').pack(pady=90)
+        tk.Button(self.menu_frame, text="Начать игру", command=self.start_game, font=('TkDefaultFont', 30), bg='black', fg='white').pack(pady=30)
         tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy, font=('TkDefaultFont', 30), bg='black', fg='white').pack(pady=10)
 
     def start_game(self):
@@ -25,9 +26,13 @@ class SnakeGame:
         self.board.pack()
 
     def end_game(self, score):
+        self.total_score += score
         self.board.pack_forget()
         self.create_menu()
-        tk.Label(self.menu_frame, text=f"Ваш счет: {score}", font=('TkDefaultFont', 18), bg='black', fg='white').pack(pady=10)
+        tk.Label(self.menu_frame, text=f"Общий счет: {self.total_score}", font=('TkDefaultFont', 16), bg='black',
+                 fg='white').pack(pady=10)
+        tk.Label(self.menu_frame, text=f"Ваш счет: {score}", font=('TkDefaultFont', 16), bg='black', fg='white').pack(
+            pady=10)
 
 class Snake(tk.Canvas):
     def __init__(self, root, end_game_callback):
