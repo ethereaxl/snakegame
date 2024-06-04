@@ -30,6 +30,7 @@ class SnakeGame:
 class Snake(tk.Canvas):
     def __init__(self, root, end_game_callback):
         super().__init__(root, width=600, height=620, background="black", highlightthickness=0)
+        self.paused = False
         self.end_game_callback = end_game_callback
         self.snake_pos = [(100, 100), (80, 100), (60, 100)]
         self.food_pos = self.set_new_food_position()
@@ -46,12 +47,26 @@ class Snake(tk.Canvas):
             if position not in self.snake_pos:
                 return position
 
+    def toggle_pause(self):
+        self.paused = not self.paused
+        if self.paused:
+            self.create_pause_button()
+        else:
+            self.delete("pause")
+
     def create_objects(self):
         self.create_text(
             45, 12, text=f"Счет: {self.score}", tag="score", fill="white", font=('TkDefaultFont', 14)
         )
         self.create_snake()
         self.create_food()
+
+    def create_pause_button(self):
+        self.pause_button = tk.Button(self, text="Выйти в меню", command=self.end_game)
+        self.pause_button.place(relx=0.5, rely=0.5, anchor="center")
+        self.create_text(300, 310, text="ПАУЗА", fill="white", font=('TkDefaultFont', 48), tags="pause")
+
+
 
     def create_snake(self):
         self.delete("snake")
@@ -67,7 +82,7 @@ class Snake(tk.Canvas):
         )
 
     def perform_actions(self):
-        if self.in_game:
+        if self.in_game and not self.paused:
             self.check_collisions()
             self.check_food_collision()
             self.move_snake()
@@ -104,14 +119,17 @@ class Snake(tk.Canvas):
         self.snake_pos = [new_head_pos] + self.snake_pos[:-1]
 
     def on_key_press(self, e):
+
         new_direction = e.keysym
         opposites = {"Up": "Down", "Down": "Up", "Left": "Right", "Right": "Left"}
-
-        if (
-            new_direction in opposites and
-            opposites[new_direction] != self.direction
-        ):
-            self.direction = new_direction
+        if e.keysym == 'space':
+            self.toggle_pause()
+        elif not self.paused:
+            if (
+                new_direction in opposites and
+                opposites[new_direction] != self.direction
+            ):
+                self.direction = new_direction
 
     def end_game(self):
         self.in_game = False
