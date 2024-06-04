@@ -4,18 +4,16 @@ import random
 class SnakeGame:
     def __init__(self, root):
         self.root = root
-        self.root.title("Змейка")
+        self.root.title("Игра Змейка")
         self.board = None
         self.create_menu()
 
     def create_menu(self):
         self.menu_frame = tk.Frame(self.root)
         self.menu_frame.pack()
-        root.geometry("500x500")
-
-        tk.Label(self.menu_frame, text="Змейка", font=('TkDefaultFont', 24)).pack(pady=10)
-        tk.Button(self.menu_frame, text="Начать игру", command=self.start_game).pack(pady=30)
-        tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy).pack(pady=30)
+        tk.Label(self.menu_frame, text="Игра Змейка", font=('TkDefaultFont', 24)).pack(pady=10)
+        tk.Button(self.menu_frame, text="Начать игру", command=self.start_game).pack(pady=10)
+        tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy).pack(pady=10)
 
     def start_game(self):
         if self.board:
@@ -76,16 +74,42 @@ class Snake(tk.Canvas):
         head_x, head_y = self.snake_pos[0]
         if head_x < 0 or head_x >= 600 or head_y < 0 or head_y >= 600 or (head_x, head_y) in self.snake_pos[1:]:
             self.in_game = False
-        pass
 
     def check_food_collision(self):
-        pass
+        if self.snake_pos[0] == self.food_pos:
+            self.score += 1
+            self.snake_pos.append(self.snake_pos[-1])
+            self.food_pos = self.set_new_food_position()
+            self.create_food()
+            self.itemconfig("score", text=f"Счет: {self.score}")
 
     def move_snake(self):
-        pass
+        head_x, head_y = self.snake_pos[0]
+        new_head_pos = ()
+        if self.direction == "Left":
+            new_head_pos = (head_x - 20, head_y)
+        elif self.direction == "Right":
+            new_head_pos = (head_x + 20, head_y)
+        elif self.direction == "Up":
+            new_head_pos = (head_x, head_y - 20)
+        elif self.direction == "Down":
+            new_head_pos = (head_x, head_y + 20)
+
+        self.snake_pos = [new_head_pos] + self.snake_pos[:-1]
+
+        for segment, position in zip(self.find_withtag("snake"), self.snake_pos):
+            self.coords(segment, position[0], position[1], position[0] + 20, position[1] + 20)
 
     def on_key_press(self, e):
-        pass
+        new_direction = e.keysym
+        all_directions = ("Up", "Down", "Left", "Right")
+        opposites = ({"Up", "Down"}, {"Left", "Right"})
+
+        if (
+            new_direction in all_directions and
+            not {new_direction, self.direction} in opposites
+        ):
+            self.direction = new_direction
 
     def end_game(self):
         self.in_game = False
