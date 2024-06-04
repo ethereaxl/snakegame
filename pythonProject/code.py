@@ -14,7 +14,7 @@ class SnakeGame:
         root.geometry("600x620")
         root.config(bg='black')
         tk.Label(self.menu_frame, text="Змейка", font=('TkDefaultFont', 44),bg='black', fg='white').pack(pady=100)
-        tk.Button(self.menu_frame, text="Начать игру", command=self.start_game, font=('TkDefaultFont', 30), bg='black', fg='white').pack(pady=10)
+        tk.Button(self.menu_frame, text="Начать игру", command=self.start_game, font=('TkDefaultFont', 30), bg='black', fg='white').pack(pady=40)
         tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy, font=('TkDefaultFont', 30), bg='black', fg='white').pack(pady=10)
 
     def start_game(self):
