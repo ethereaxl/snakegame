@@ -17,7 +17,7 @@ class SnakeGame:
         tk.Label(self.menu_frame, text="Змейка", font=('TkDefaultFont', 44), bg='black', fg='white').pack(pady=50)
         tk.Button(self.menu_frame, text="Уровень 1", command=lambda: self.start_game(1), font=('TkDefaultFont', 25), bg='black', fg='white').pack(pady=20)
         tk.Button(self.menu_frame, text="Уровень 2", command=lambda: self.start_game(2), font=('TkDefaultFont', 25), bg='black', fg='white').pack(pady=20)
-        tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy, font=('TkDefaultFont', 20), bg='black', fg='white').pack(pady=10)
+        tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy, font=('TkDefaultFont', 23), bg='black', fg='white').pack(pady=12)
 
     def start_game(self, level):
         if self.board:
