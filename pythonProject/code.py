@@ -2,8 +2,6 @@ import tkinter as tk
 import random
 import time
 import pygame
-
-
 class SnakeGame:
     def __init__(self, root):
         self.root = root
@@ -11,16 +9,13 @@ class SnakeGame:
         self.board = None
         self.total_score = 0
         self.best_times = {1: float('inf'), 2: float('inf'), 3: float('inf')}
-
         pygame.mixer.init()
         self.bg_music = 'background.mp3'
         self.food_sound = 'eat.mp3'
         self.death_sound = 'gameover.mp3'
-
         pygame.mixer.music.load(self.bg_music)
         pygame.mixer.music.set_volume(0.2)
         pygame.mixer.music.play(-1)
-
         self.create_menu()
 
     def create_menu(self):
