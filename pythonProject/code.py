@@ -8,7 +8,7 @@ class SnakeGame:
         self.root.title("Змейка")
         self.board = None
         self.total_score = 0
-        self.best_times = {1: float('inf'), 2: float('inf'), 3: float('inf')}
+        self.best_times = {1: float('0'), 2: float('0'), 3: float('0')}
         pygame.mixer.init()
         self.bg_music = 'background.mp3'
         self.food_sound = 'eat.mp3'
@@ -35,7 +35,7 @@ class SnakeGame:
         button = tk.Button(frame, text=text, command=lambda: self.start_game(level), font=('TkDefaultFont', 25), bg='black', fg='white')
         button.pack(side='left', padx=10)
         best_time = self.best_times[level]
-        time_text = f"{best_time:.2f} сек" if best_time < float('inf') else 'N/A'
+        time_text = f"{best_time:.2f} сек"
         tk.Label(frame, text=f"Лучшее время: {time_text}", font=('TkDefaultFont', 16), bg='black', fg='white').pack(side='left', padx=10)
 
     def start_game(self, level):
@@ -47,7 +47,7 @@ class SnakeGame:
 
     def end_game(self, score, level, time_spent):
         self.total_score += score
-        self.best_times[level] = min(self.best_times[level], time_spent)
+        self.best_times[level] = max(self.best_times[level], time_spent)
         self.board.pack_forget()
         self.create_menu()
         tk.Label(self.menu_frame, text=f"Общий счет: {self.total_score}", font=('TkDefaultFont', 16), bg='black',fg='white').pack(pady=10)
