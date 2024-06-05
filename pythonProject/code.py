@@ -27,19 +27,16 @@ class SnakeGame:
         self.create_level_button("Уровень 1", 1)
         self.create_level_button("Уровень 2", 2)
         self.create_level_button("Уровень 3", 3)
-        tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy, font=('TkDefaultFont', 23), bg='black',
-                  fg='white').pack(pady=12)
+        tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy, font=('TkDefaultFont', 23), bg='black', fg='white').pack(pady=12)
 
     def create_level_button(self, text, level):
         frame = tk.Frame(self.menu_frame, bg='black')
         frame.pack(pady=10, fill='x')
-        button = tk.Button(frame, text=text, command=lambda: self.start_game(level), font=('TkDefaultFont', 25),
-                           bg='black', fg='white')
+        button = tk.Button(frame, text=text, command=lambda: self.start_game(level), font=('TkDefaultFont', 25), bg='black', fg='white')
         button.pack(side='left', padx=10)
         best_time = self.best_times[level]
         time_text = f"{best_time:.2f} сек" if best_time < float('inf') else 'N/A'
-        tk.Label(frame, text=f"Лучшее время: {time_text}", font=('TkDefaultFont', 16), bg='black', fg='white').pack(
-            side='left', padx=10)
+        tk.Label(frame, text=f"Лучшее время: {time_text}", font=('TkDefaultFont', 16), bg='black', fg='white').pack(side='left', padx=10)
 
     def start_game(self, level):
         if self.board:
@@ -101,8 +98,7 @@ class Snake(tk.Canvas):
 
     def create_food(self):
         self.delete("food")
-        self.create_rectangle(self.food_pos[0], self.food_pos[1], self.food_pos[0] + 20, self.food_pos[1] + 20,
-                              fill="red", tags="food")
+        self.create_rectangle(self.food_pos[0], self.food_pos[1], self.food_pos[0] + 20, self.food_pos[1] + 20, fill="red", tags="food")
 
     def create_obstacles(self):
         self.delete("obstacle")
@@ -112,8 +108,7 @@ class Snake(tk.Canvas):
             obstacle_area = [(pos[0] + i * 20, pos[1]) for i in range(random.randint(1, 5))]
             self.obstacles.extend(obstacle_area)
             for x_position, y_position in obstacle_area:
-                self.create_rectangle(x_position, y_position, x_position + 20, y_position + 20, fill="grey",
-                                      tags="obstacle")
+                self.create_rectangle(x_position, y_position, x_position + 20, y_position + 20, fill="grey", tags="obstacle")
 
     def perform_actions(self):
         if self.in_game and not self.paused:
