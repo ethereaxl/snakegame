@@ -1,6 +1,8 @@
 import tkinter as tk
 import random
 import time
+import pygame
+
 
 class SnakeGame:
     def __init__(self, root):
@@ -9,6 +11,16 @@ class SnakeGame:
         self.board = None
         self.total_score = 0
         self.best_times = {1: float('inf'), 2: float('inf'), 3: float('inf')}
+
+        pygame.mixer.init()
+        self.bg_music = 'background.mp3'
+        self.food_sound = 'eat.mp3'
+        self.death_sound = 'gameover.mp3'
+
+        pygame.mixer.music.load(self.bg_music)
+        pygame.mixer.music.set_volume(0.2)
+        pygame.mixer.music.play(-1)
+
         self.create_menu()
 
     def create_menu(self):
@@ -20,22 +32,25 @@ class SnakeGame:
         self.create_level_button("Уровень 1", 1)
         self.create_level_button("Уровень 2", 2)
         self.create_level_button("Уровень 3", 3)
-        tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy, font=('TkDefaultFont', 23), bg='black', fg='white').pack(pady=12)
+        tk.Button(self.menu_frame, text="Выйти", command=self.root.destroy, font=('TkDefaultFont', 23), bg='black',
+                  fg='white').pack(pady=12)
 
     def create_level_button(self, text, level):
         frame = tk.Frame(self.menu_frame, bg='black')
         frame.pack(pady=10, fill='x')
-        button = tk.Button(frame, text=text, command=lambda: self.start_game(level), font=('TkDefaultFont', 25), bg='black', fg='white')
+        button = tk.Button(frame, text=text, command=lambda: self.start_game(level), font=('TkDefaultFont', 25),
+                           bg='black', fg='white')
         button.pack(side='left', padx=10)
         best_time = self.best_times[level]
         time_text = f"{best_time:.2f} сек" if best_time < float('inf') else 'N/A'
-        tk.Label(frame, text=f"Лучшее время: {time_text}", font=('TkDefaultFont', 16), bg='black', fg='white').pack(side='left', padx=10)
+        tk.Label(frame, text=f"Лучшее время: {time_text}", font=('TkDefaultFont', 16), bg='black', fg='white').pack(
+            side='left', padx=10)
 
     def start_game(self, level):
         if self.board:
             self.board.destroy()
         self.menu_frame.pack_forget()
-        self.board = Snake(self.root, self.end_game, level)
+        self.board = Snake(self.root, self.end_game, level, self.food_sound, self.death_sound)
         self.board.pack()
 
     def end_game(self, score, level, time_spent):
@@ -43,12 +58,13 @@ class SnakeGame:
         self.best_times[level] = min(self.best_times[level], time_spent)
         self.board.pack_forget()
         self.create_menu()
-        tk.Label(self.menu_frame, text=f"Общий счет: {self.total_score}", font=('TkDefaultFont', 16), bg='black', fg='white').pack(pady=10)
+        tk.Label(self.menu_frame, text=f"Общий счет: {self.total_score}", font=('TkDefaultFont', 16), bg='black',fg='white').pack(pady=10)
         tk.Label(self.menu_frame, text=f"Ваш счет: {score}", font=('TkDefaultFont', 16), bg='black', fg='white').pack(pady=10)
-        tk.Label(self.menu_frame, text=f"Время: {time_spent:.2f} сек", font=('TkDefaultFont', 16), bg='black', fg='white').pack(pady=10)
+        tk.Label(self.menu_frame, text=f"Время: {time_spent:.2f} сек", font=('TkDefaultFont', 16), bg='black',fg='white').pack(pady=10)
+
 
 class Snake(tk.Canvas):
-    def __init__(self, root, end_game_callback, level):
+    def __init__(self, root, end_game_callback, level, food_sound, death_sound):
         super().__init__(root, width=600, height=620, background="black", highlightthickness=0)
         self.level = level
         self.obstacles = []
@@ -61,6 +77,8 @@ class Snake(tk.Canvas):
         self.score = 0
         self.in_game = True
         self.start_time = time.time()
+        self.food_sound = pygame.mixer.Sound(food_sound)
+        self.death_sound = pygame.mixer.Sound(death_sound)
         self.bind_all("<Key>", self.on_key_press)
         self.create_objects()
         speed = 100 if level == 1 else 80 if level == 2 else 66
@@ -74,7 +92,7 @@ class Snake(tk.Canvas):
 
     def create_objects(self):
         self.create_text(45, 12, text=f"Счет: {self.score}", tag="score", fill="white", font=('TkDefaultFont', 14))
-        self.create_text(515, 12, text=f"Время: 0.00 сек", tag="timer", fill="white", font=('TkDefaultFont', 14))
+        self.create_text(505, 12, text=f"Время: 0.00 сек", tag="timer", fill="white", font=('TkDefaultFont', 14))
         self.create_snake()
         self.create_food()
         if self.level > 1:
@@ -88,7 +106,8 @@ class Snake(tk.Canvas):
 
     def create_food(self):
         self.delete("food")
-        self.create_rectangle(self.food_pos[0], self.food_pos[1], self.food_pos[0] + 20, self.food_pos[1] + 20, fill="red", tags="food")
+        self.create_rectangle(self.food_pos[0], self.food_pos[1], self.food_pos[0] + 20, self.food_pos[1] + 20,
+                              fill="red", tags="food")
 
     def create_obstacles(self):
         self.delete("obstacle")
@@ -98,7 +117,8 @@ class Snake(tk.Canvas):
             obstacle_area = [(pos[0] + i * 20, pos[1]) for i in range(random.randint(1, 5))]
             self.obstacles.extend(obstacle_area)
             for x_position, y_position in obstacle_area:
-                self.create_rectangle(x_position, y_position, x_position + 20, y_position + 20, fill="grey", tags="obstacle")
+                self.create_rectangle(x_position, y_position, x_position + 20, y_position + 20, fill="grey",
+                                      tags="obstacle")
 
     def perform_actions(self):
         if self.in_game and not self.paused:
@@ -116,8 +136,10 @@ class Snake(tk.Canvas):
 
     def check_collisions(self):
         head_x, head_y = self.snake_pos[0]
-        if head_x < 0 or head_x >= 600 or head_y < 0 or head_y >= 600 or (head_x, head_y) in self.snake_pos[1:] or (head_x, head_y) in self.obstacles:
+        if head_x < 0 or head_x >= 600 or head_y < 0 or head_y >= 600 or (head_x, head_y) in self.snake_pos[1:] or (
+        head_x, head_y) in self.obstacles:
             self.in_game = False
+            pygame.mixer.Sound.play(self.death_sound)
 
     def check_food_collision(self):
         if self.snake_pos[0] == self.food_pos:
@@ -126,6 +148,7 @@ class Snake(tk.Canvas):
             self.food_pos = self.set_new_food_position()
             self.create_food()
             self.itemconfig("score", text=f"Счет: {self.score}")
+            pygame.mixer.Sound.play(self.food_sound)
 
     def move_snake(self):
         head_x, head_y = self.snake_pos[0]
@@ -165,6 +188,7 @@ class Snake(tk.Canvas):
         time_spent = time.time() - self.start_time
         self.delete(tk.ALL)
         self.end_game_callback(self.score, self.level, time_spent)
+
 
 root = tk.Tk()
 game = SnakeGame(root)
