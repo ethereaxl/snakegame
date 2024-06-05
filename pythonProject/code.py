@@ -24,11 +24,12 @@ class SnakeGame:
 
     def create_level_button(self, text, level):
         frame = tk.Frame(self.menu_frame, bg='black')
-        frame.pack(pady=10)
-        tk.Button(frame, text=text, command=lambda: self.start_game(level), font=('TkDefaultFont', 25), bg='black', fg='white').pack(side='left', padx=10)
+        frame.pack(pady=10, fill='x')
+        button = tk.Button(frame, text=text, command=lambda: self.start_game(level), font=('TkDefaultFont', 25), bg='black', fg='white')
+        button.pack(side='left', padx=10)
         best_time = self.best_times[level]
-        time_text = f"{best_time if best_time < float('inf') else 'N/A'} сек"
-        tk.Label(frame, text=f"Лучшее время: {time_text}", font=('TkDefaultFont', 16), bg='black', fg='white').pack(side='left')
+        time_text = f"{best_time:.2f} сек" if best_time < float('inf') else 'N/A'
+        tk.Label(frame, text=f"Лучшее время: {time_text}", font=('TkDefaultFont', 16), bg='black', fg='white').pack(side='left', padx=10)
 
     def start_game(self, level):
         if self.board:
@@ -73,7 +74,7 @@ class Snake(tk.Canvas):
 
     def create_objects(self):
         self.create_text(45, 12, text=f"Счет: {self.score}", tag="score", fill="white", font=('TkDefaultFont', 14))
-        self.create_text(555, 12, text=f"Время: 0.0 сек", tag="timer", fill="white", font=('TkDefaultFont', 14))
+        self.create_text(515, 12, text=f"Время: 0.00 сек", tag="timer", fill="white", font=('TkDefaultFont', 14))
         self.create_snake()
         self.create_food()
         if self.level > 1:
@@ -143,7 +144,7 @@ class Snake(tk.Canvas):
     def update_timer(self):
         current_time = time.time()
         time_spent = current_time - self.start_time
-        self.itemconfig("timer", text=f"Время: {time_spent:.1f} сек")
+        self.itemconfig("timer", text=f"Время: {time_spent:.2f} сек")
 
     def on_key_press(self, e):
         new_direction = e.keysym
@@ -168,4 +169,3 @@ class Snake(tk.Canvas):
 root = tk.Tk()
 game = SnakeGame(root)
 root.mainloop()
-
